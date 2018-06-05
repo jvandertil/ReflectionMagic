@@ -86,7 +86,7 @@ namespace ReflectionMagic
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
-            for (int i = 0; i < args.Length; i++)
+            for (int i = 0; i < args.Length; ++i)
             {
                 args[i] = Unwrap(args[i]);
             }
@@ -191,37 +191,39 @@ namespace ReflectionMagic
             Debug.Assert(passedArguments != null);
 
             var parametersOnMethod = method.GetParameters();
-
             if (parametersOnMethod.Length != passedArguments.Length)
+            {
                 return false;
+            }
 
             for (int i = 0; i < parametersOnMethod.Length; ++i)
             {
                 var parameterType = parametersOnMethod[i].ParameterType.GetTypeInfo();
                 var argument = passedArguments[i];
-                var argumentType = argument.GetType().GetTypeInfo();
 
-                if (argument == null && parameterType.IsValueType)
+                if (argument == null)
                 {
-                    // Value types can not be null.
-                    return false;
-                }
-
-                if (!parameterType.IsInstanceOfType(passedArguments[i]))
-                {
-                    // Parameters should be instance of the parameter type.
-                    if (parameterType.IsByRef)
+                    if (parameterType.IsValueType)
                     {
-                        // Handle parameters passed by ref
-                        var argumentByRefType = argumentType.MakeByRefType().GetTypeInfo();
-                        if (parameterType != argumentByRefType)
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
+                        // Value types can not be null.
                         return false;
+                    }
+                }
+                else
+                {
+                    if (!parameterType.IsInstanceOfType(argument))
+                    {
+                        // Special case: Parameters that are ByRef fail the instance check.
+                        if (parameterType.IsByRef)
+                        {
+                            // Parameter is expected by reference
+                            var argumentType = argument.GetType();
+                            var argumentByRefType = argumentType.MakeByRefType().GetTypeInfo();
+                            if (parameterType != argumentByRefType)
+                            {
+                                return false;
+                            }
+                        }
                     }
                 }
             }

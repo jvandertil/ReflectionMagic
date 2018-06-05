@@ -45,6 +45,28 @@ namespace ReflectionMagicTests
             Assert.Equal("TestValue", instance.StringValue);
         }
 
+        [Fact]
+        public void CanHandleNullArgumentToConstructor()
+        {
+            var type = typeof(TypeWithMultipleArgsConstructor).AsDynamicType();
+            var instance = type.New(12, null);
+
+            Assert.NotNull(instance);
+            Assert.Equal(12, instance.IntValue);
+            Assert.Null(instance.StringValue);
+        }
+
+        [Fact(Skip = "Currently not supported")]
+        public void CanFindConstructorWithByRefParameter()
+        {
+            object obj = new object();
+
+            var type = typeof(TypeWithByRefConstructor).AsDynamicType();
+            var instance = type.New(ref obj);
+
+            Assert.NotNull(instance);
+        }
+
         private class TypeWithNoArgsConstructor
         {
             public TypeWithNoArgsConstructor()
@@ -79,6 +101,16 @@ namespace ReflectionMagicTests
             {
                 IntValue = value;
                 StringValue = stringValue;
+            }
+        }
+
+        private class TypeWithByRefConstructor
+        {
+            private object _obj;
+
+            public TypeWithByRefConstructor(ref object obj)
+            {
+                _obj = obj;
             }
         }
     }

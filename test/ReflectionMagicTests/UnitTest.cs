@@ -207,6 +207,14 @@ namespace ReflectionMagicTests
         }
 
         [Fact]
+        public void TestNullArgumentToMethod()
+        {
+            var result = dynamicFoo.SomePassthroughMethod(null);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
         public void MethodWithNoPrimitiveResult()
         {
             var result = (Exception)dynamicFoo.SomeMethodWithNoPrimitiveResult();
@@ -236,6 +244,24 @@ namespace ReflectionMagicTests
             dynamicFoo.AddTwoParametersWithOut(a, b, out int c);
 
             Assert.Equal(237, c);
+        }
+
+        [Fact]
+        public void TestNullByRef()
+        {
+            object thing = null;
+            var result = dynamicFoo.ReturnNullOrStringFromRefObject(ref thing);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void TestObjectByRef()
+        {
+            object thing = new object();
+            var result = dynamicFoo.ReturnNullOrStringFromRefObject(ref thing);
+
+            Assert.NotNull(result);
         }
 #endif
 

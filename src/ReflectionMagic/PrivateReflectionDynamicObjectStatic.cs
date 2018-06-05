@@ -53,7 +53,18 @@ namespace ReflectionMagic
                     bool found = true;
                     for (int j = 0; j < args.Length; ++j)
                     {
-                        if (parameters[j].ParameterType != args[j].GetType())
+                        var argument = args[j];
+                        var parameterType = parameters[j].ParameterType;
+
+                        if (argument is null
+                            && parameterType.GetTypeInfo().IsValueType)
+                        {
+                            found = false;
+                            break;
+                        }
+
+                        if (argument != null
+                            && parameterType != argument.GetType())
                         {
                             found = false;
                             break;

@@ -78,6 +78,11 @@ namespace LibraryWithPrivateMembers
             result = a + b;
         }
 
+        private string ReturnNullOrStringFromRefObject(ref object obj)
+        {
+            return obj?.ToString();
+        }
+
         private Dictionary<string, string> _dict = new Dictionary<string, string>();
         internal string this[string s]
         {
@@ -99,6 +104,11 @@ namespace LibraryWithPrivateMembers
         private T2 SomeGenericMethod<T, T2>(T value, T2 value2)
         {
             return value2;
+        }
+
+        private object SomePassthroughMethod(object value)
+        {
+            return value;
         }
 
         private Exception SomeMethodWithNoPrimitiveResult()
